@@ -6,7 +6,8 @@ class jenkins::slave(
   $bare = false,
   $user = true,
   $python3 = false,
-  $include_pypy = false
+  $include_pypy = false,
+  $jenkins_url = ''
 ) {
 
   include pip
@@ -346,6 +347,23 @@ class jenkins::slave(
     source  => 'puppet:///modules/jenkins/slave_scripts',
   }
 
+  file { '/usr/local/jenkins/jenkins-cli.jar':
+    ensure  => present,
+    source  => 'puppet:///modules/jenkins/jenkins-slave/jenkins-cli.jar',
+    owner   => 'root',
+    group   => 'root',
+    mode    => '0644',
+    require => File['/usr/local/jenkins'],
+  }
+
+  file { '/usr/local/bin/rebuild-node.sh':
+    ensure => present,
+    source => 'puppet:///modules/jenkins/rebuild-node.sh',
+    owner  => 'root',
+    group  => 'root',
+    mode   => '0755',
+  }
+
   file { '/etc/sudoers.d/jenkins-sudo':
     ensure => present,
     source => 'puppet:///modules/jenkins/jenkins-sudo.sudo',
@@ -390,6 +408,28 @@ class jenkins::slave(
         ensure  => present,
         require => Apt::Ppa['ppa:pypy/ppa']
       }
+    }
+
+    file { '/etc/init.d/jenkins-slave':
+      ensure => present,
+      source => 'puppet:///modules/jenkins/jenkins-slave/init',
+      owner  => 'root',
+      group  => 'root',
+      mode   => '0755',
+      require => File ['/usr/local/jenkins/jenkins-cli.jar']
+    }
+    file { '/etc/default/jenkins-slave':
+      ensure => present,
+      content => template('jenkins/jenkins-slave/default.erb'),
+      owner  => 'root',
+      group  => 'root',
+      mode   => '0644',
+      require => File ['/etc/init.d/jenkins-slave']
+    }
+    exec { 'update-rc':
+      command => '/usr/sbin/update-rc.d jenkins-slave defaults 99 01',
+      path    => ['/sbin', '/bin', '/usr/sbin', '/usr/bin'],
+      require => File ['/etc/init.d/jenkins-slave']
     }
   }
 }

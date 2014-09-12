@@ -14,6 +14,13 @@ class jenkins::master(
   $ssl_chain_file_contents = '', # If left empty puppet will not create file.
   $jenkins_ssh_private_key = '',
   $jenkins_ssh_public_key = '',
+  $scp_name = '',
+  $scp_host = '',
+  $scp_port = '',
+  $scp_user = '',
+  $scp_password = '',
+  $scp_keyfile = '',
+  $scp_destpath = '',
 ) {
   include pip
   include apt
@@ -90,6 +97,7 @@ class jenkins::master(
     'python-sqlalchemy',  # devstack-gate
     'ssl-cert',
     'sqlite3', # interact with devstack-gate DB
+    'daemon',
   ]
 
   package { $packages:
@@ -97,8 +105,30 @@ class jenkins::master(
   }
 
   package { 'jenkins':
+    ensure  => 1.533,
+    require => Exec ['install-jenkins-1.533'],
+  }
+
+  exec { 'install-jenkins-1.533':
+    command => 'dpkg --force-confold -i jenkins_1.533_all.deb',
+    path    => ['/sbin', '/bin', '/usr/sbin', '/usr/bin'],
+    require => [ Package ['daemon'],
+                 Exec ['download-jenkins-1.533'] ],
+  }
+
+  exec { 'download-jenkins-1.533':
+    command => 'wget http://pkg.jenkins-ci.org/debian/binary/jenkins_1.533_all.deb',
+    path    => ['/sbin', '/bin', '/usr/sbin', '/usr/bin'],
+    unless  => 'test -e jenkins_1.533_all.deb',
+    require => Package['wget'],
+  }
+
+  file { '/etc/apt/preferences.d/01-jenkins.pref':
     ensure  => present,
-    require => Apt::Source['jenkins'],
+    owner   => 'root',
+    group   => 'root',
+    mode    => '0444',
+    source  => 'puppet:///modules/jenkins/01-jenkins.pref',
   }
 
   exec { 'update apt cache':
@@ -180,6 +210,15 @@ class jenkins::master(
     require => File['/var/lib/jenkins/plugins/simple-theme-plugin'],
   }
 
+  file { '/var/lib/jenkins/plugins/scp.hpi':
+    ensure  => present,
+    owner   => 'jenkins',
+    group   => 'jenkins',
+    mode    => 0644,
+    source  => 'puppet:///modules/jenkins/scp.hpi',
+    require => File['/var/lib/jenkins/plugins'],
+  }
+
   file { '/var/lib/jenkins/logger.conf':
     ensure  => present,
     owner   => 'jenkins',
@@ -213,5 +252,21 @@ class jenkins::master(
     force   => true,
     require => File['/usr/local/jenkins'],
     source  => 'puppet:///modules/jenkins/slave_scripts',
+  }
+
+  file { '/var/lib/jenkins/be.certipost.hudson.plugin.SCPRepositoryPublisher.xml':
+    content => template('jenkins/jenkins.scp.erb'),
+    owner   => 'jenkins',
+    group   => 'jenkins',
+    mode    => '0644',
+    require => File['/var/lib/jenkins'],
+  }
+
+  file { '/var/lib/jenkins/credentials.xml':
+    source  => 'puppet:///modules/jenkins/credentials.xml',
+    owner   => 'jenkins',
+    group   => 'jenkins',
+    mode    => '0644',
+    require => File['/var/lib/jenkins/.ssh/id_rsa'],
   }
 }

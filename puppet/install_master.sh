@@ -5,6 +5,7 @@
 
 set -e
 
+LC_ALL=C
 THIS_DIR=`pwd`
 
 DATA_REPO_INFO_FILE=$THIS_DIR/.data_repo_info
@@ -117,13 +118,23 @@ APACHE_SSL_KEY_FILE=`cat $APACHE_SSL_ROOT_DIR/new.cert.key`
 
 CLASS_ARGS="jenkins_ssh_public_key => '$JENKINS_SSH_PUBLIC_KEY_CONTENTS', jenkins_ssh_private_key => '$JENKINS_SSH_PRIVATE_KEY_CONTENTS', "
 CLASS_ARGS="$CLASS_ARGS ssl_cert_file_contents => '$APACHE_SSL_CERT_FILE', ssl_key_file_contents => '$APACHE_SSL_KEY_FILE', "
+CLASS_ARGS="$CLASS_ARGS upstream_gerrit_server => '$UPSTREAM_GERRIT_SERVER', "
 CLASS_ARGS="$CLASS_ARGS upstream_gerrit_user => '$UPSTREAM_GERRIT_USER', "
 CLASS_ARGS="$CLASS_ARGS upstream_gerrit_ssh_private_key => '$UPSTREAM_GERRIT_SSH_PRIVATE_KEY_CONTENTS', "
 CLASS_ARGS="$CLASS_ARGS upstream_gerrit_host_pub_key => '$UPSTREAM_GERRIT_HOST_PUB_KEY', "
 CLASS_ARGS="$CLASS_ARGS git_email => '$GIT_EMAIL', git_name => '$GIT_NAME', "
 CLASS_ARGS="$CLASS_ARGS publish_host => '$PUBLISH_HOST', "
+CLASS_ARGS="$CLASS_ARGS jenkins_url => '$JENKINS_URL', "
+CLASS_ARGS="$CLASS_ARGS zuul_url => '$ZUUL_URL', "
 CLASS_ARGS="$CLASS_ARGS data_repo_dir => '$DATA_PATH', "
 CLASS_ARGS="$CLASS_ARGS url_pattern => '$URL_PATTERN', "
+CLASS_ARGS="$CLASS_ARGS scp_name => '$SCP_NAME', "
+CLASS_ARGS="$CLASS_ARGS scp_host => '$SCP_HOST', "
+CLASS_ARGS="$CLASS_ARGS scp_port => '$SCP_PORT', "
+CLASS_ARGS="$CLASS_ARGS scp_user => '$SCP_USER', "
+CLASS_ARGS="$CLASS_ARGS scp_password => '$SCP_PASSWORD', "
+CLASS_ARGS="$CLASS_ARGS scp_keyfile => '$SCP_KEYFILE', "
+CLASS_ARGS="$CLASS_ARGS scp_destpath => '$SCP_DESTPATH', "
 
 # Doing this here because ran into one problem after another trying
 # to do this in Puppet... which won't let me execute Ruby code in

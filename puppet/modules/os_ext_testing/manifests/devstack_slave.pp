@@ -7,6 +7,7 @@ class os_ext_testing::devstack_slave (
   $ssh_key = '',
   $python3 = false,
   $include_pypy = false,
+  $jenkins_url = '',
 ) {
   include os_ext_testing::base
   include openstack_project::tmpcleanup
@@ -15,6 +16,7 @@ class os_ext_testing::devstack_slave (
     ssh_key      => $ssh_key,
     python3      => $python3,
     include_pypy => $include_pypy,
+    jenkins_url  => $jenkins_url,
   }
   include devstack_host
 }

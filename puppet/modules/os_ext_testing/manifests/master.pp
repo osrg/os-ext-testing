@@ -21,7 +21,16 @@ class os_ext_testing::master (
   $upstream_gerrit_ssh_private_key = '',
   $upstream_gerrit_host_pub_key = '',
   $git_email = 'testing@myvendor.com',
-  $git_name = 'MyVendor Jenkins'
+  $git_name = 'MyVendor Jenkins',
+  $jenkins_url = 'http://localhost:8080/',
+  $zuul_url = '',
+  $scp_name = '',
+  $scp_host = '',
+  $scp_port = '',
+  $scp_user = '',
+  $scp_password = '',
+  $scp_keyfile = '',
+  $scp_destpath = '',
 ) {
   include os_ext_testing::base
   include apache
@@ -57,6 +66,13 @@ class os_ext_testing::master (
     ssl_chain_file_contents => $ssl_chain_file_contents,
     jenkins_ssh_private_key => $jenkins_ssh_private_key,
     jenkins_ssh_public_key  => $jenkins_ssh_public_key,
+    scp_name                => $scp_name,
+    scp_host                => $scp_host,
+    scp_port                => $scp_port,
+    scp_user                => $scp_user,
+    scp_password            => $scp_password,
+    scp_keyfile             => $scp_keyfile,
+    scp_destpath            => $scp_destpath,
   }
 
   jenkins::plugin { 'ansicolor':
@@ -150,6 +166,12 @@ class os_ext_testing::master (
     source  => 'puppet:///modules/jenkins/ssh_config',
   }
 
+  exec { 'restart_jenkins':
+    command => 'service jenkins restart',
+    path    => ['/sbin', '/bin', '/usr/sbin', '/usr/bin'],
+    require => Class['jenkins::master'],
+  }
+
   if $manage_jenkins_jobs == true {
     class { '::jenkins::job_builder':
       url      => "http://127.0.0.1:8080/",
@@ -166,6 +188,7 @@ class os_ext_testing::master (
       force   => true,
       source  => 'puppet:///modules/os_ext_testing/jenkins_job_builder/config',
       notify  => Exec['jenkins_jobs_update'],
+      require => Exec['restart_jenkins'],
     }
 
     file { '/etc/jenkins_jobs/config/macros.yaml':
@@ -175,6 +198,7 @@ class os_ext_testing::master (
       mode   => '0755',
       content => template('os_ext_testing/jenkins_job_builder/config/macros.yaml.erb'),
       notify  => Exec['jenkins_jobs_update'],
+      require => Exec['restart_jenkins'],
     }
 
     file { '/etc/default/jenkins':

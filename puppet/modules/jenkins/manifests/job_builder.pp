@@ -42,6 +42,8 @@ class jenkins::job_builder (
     command     => 'jenkins-jobs update --delete-old /etc/jenkins_jobs/config',
     path        => '/bin:/usr/bin:/usr/local/bin',
     refreshonly => true,
+    tries       => 6,
+    try_sleep   => 10,
     require     => [
       File['/etc/jenkins_jobs/jenkins_jobs.ini'],
       Package['python-jenkins'],

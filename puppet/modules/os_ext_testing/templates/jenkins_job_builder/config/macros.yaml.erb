@@ -28,15 +28,15 @@
     builders:
       - shell: |
           #!/bin/sh
-        echo "Detailed logs: http://<%= @log_url_root %>/$LOG_PATH/"
+          echo "Detailed logs: http://<%= @log_url_root %>/$LOG_PATH/"
 
 - publisher:
     name: console-log
     publishers:
       - scp:
-          site: '<%= @static_url_root %>'
+          site: '<%= scp_name %>'
           files:
-            - target: 'logs/$LOG_PATH'
+            - target: '$LOG_PATH'
               copy-console: true
               copy-after-failure: true
 
@@ -44,9 +44,19 @@
     name: devstack-logs
     publishers:
       - scp:
-          site: '<%= @static_url_root %>'
+          site: '<%= scp_name %>'
           files:
-            - target: 'logs/$LOG_PATH'
+            - target: '$LOG_PATH'
               source: 'logs/**'
               keep-hierarchy: true
+              copy-after-failure: true
+
+- publisher:
+    name: devstack-confs
+    publishers:
+      - scp:
+          site: '<%= scp_name %>'
+          files:
+            - target: '$LOG_PATH'
+              source: 'confs/**'
               copy-after-failure: true
