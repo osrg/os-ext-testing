@@ -11,6 +11,8 @@ DATA_PATH=$THIS_DIR/data
 OSEXT_PATH=$THIS_DIR/os-ext-testing
 OSEXT_REPO=${OSEXT_REPO:-https://github.com/jaypipes/os-ext-testing}
 CONFIG_REPO=${CONFIG_REPO:-https://review.openstack.org/p/openstack-infra/config.git}
+DEVSTACK_GATE_REPO=${DEVSTACK_GATE_REPO:-git://git.openstack.org/openstack-infra/devstack-gate}
+DEVSTACK_GATE_3PPRJ_BASE=${DEVSTACK_GATE_3PPRJ_BASE:-osrg}
 PUPPET_MODULE_PATH="--modulepath=$OSEXT_PATH/puppet/modules:/root/config/modules:/etc/puppet/modules"
 INST_PUPPET_SH=${PUPPET_SH:-https://git.openstack.org/cgit/openstack-infra/config/plain/install_puppet.sh}
 
@@ -80,11 +82,15 @@ else
 fi
 
 CLASS_ARGS="ssh_key => '$JENKINS_SSH_PUBLIC_KEY_CONTENTS', "
+CLASS_ARGS="$CLASS_ARGS jenkins_url => '$JENKINS_URL', "
 
 sudo puppet apply --verbose $PUPPET_MODULE_PATH -e "class {'os_ext_testing::devstack_slave': $CLASS_ARGS }"
 
 if [[ ! -e /opt/git ]]; then
     sudo mkdir -p /opt/git
     sudo -i python /opt/nodepool-scripts/cache_git_repos.py
-    sudo /opt/nodepool-scripts/prepare_devstack.sh
+    sudo mkdir -p /opt/git/${DEVSTACK_GATE_3PPRJ_BASE}
+    sudo git clone https://github.com/${DEVSTACK_GATE_3PPRJ_BASE}/ryu /opt/git/${DEVSTACK_GATE_3PPRJ_BASE}/ryu
+    sudo git clone $DEVSTACK_GATE_REPO /opt/git/${DEVSTACK_GATE_3PPRJ_BASE}/devstack-gate
+    sudo -u jenkins -i /opt/nodepool-scripts/prepare_devstack.sh
 fi
