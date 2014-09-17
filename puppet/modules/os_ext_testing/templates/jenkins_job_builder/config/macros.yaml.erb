@@ -3,19 +3,21 @@
     builders:
       - shell: |
           #!/bin/bash -xe
+          export DEVSTACK_GATE_3PPRJ_BASE=osrg
+          export DEVSTACK_GATE_3PBRANCH=ofaci
           if [[ ! -e devstack-gate ]]; then
-              git clone git://git.openstack.org/openstack-infra/devstack-gate
+              git clone -b $DEVSTACK_GATE_3PBRANCH https://github.com/${DEVSTACK_GATE_3PPRJ_BASE}/devstack-gate.git
           else
               cd devstack-gate
-              git remote set-url origin git://git.openstack.org/openstack-infra/devstack-gate
+              git remote set-url origin https://github.com/${DEVSTACK_GATE_3PPRJ_BASE}/devstack-gate.git
               git remote update
               git reset --hard
               if ! git clean -x -f ; then
                   sleep 1
                   git clean -x -f
               fi
-              git checkout master
-              git reset --hard remotes/origin/master
+              git checkout $DEVSTACK_GATE_3PBRANCH
+              git reset --hard remotes/origin/${DEVSTACK_GATE_3PBRANCH}
               if ! git clean -x -f ; then
                   sleep 1
                   git clean -x -f
