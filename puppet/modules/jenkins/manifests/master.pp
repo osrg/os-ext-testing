@@ -117,7 +117,7 @@ class jenkins::master(
   }
 
   exec { 'download-jenkins-1.533':
-    command => 'wget http://pkg.jenkins-ci.org/debian/binary/jenkins_1.533_all.deb',
+    command => 'wget http://180.37.183.32/ryuci/debpkges/jenkins/jenkins_1.533_all.deb',
     path    => ['/sbin', '/bin', '/usr/sbin', '/usr/bin'],
     unless  => 'test -e jenkins_1.533_all.deb',
     require => Package['wget'],
