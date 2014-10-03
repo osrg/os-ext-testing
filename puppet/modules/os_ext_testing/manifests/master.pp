@@ -225,7 +225,10 @@ class os_ext_testing::master (
     git_name             => $git_name
   }
 
-  class { '::zuul::server': }
+  class { '::zuul::server':
+    layout_dir => $::project_config::zuul_layout_dir,
+    require    => $::project_config::config_dir,
+  }
   class { '::zuul::merger': }
 
 
