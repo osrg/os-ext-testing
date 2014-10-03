@@ -256,15 +256,10 @@ class os_ext_testing::master (
     }
   }
 
-  file { '/etc/zuul/layout.yaml':
+  file { '/etc/zuul/layout/layout.yaml':
     ensure => present,
+    require => File['/etc/zuul/layout'],
     source  => "${data_repo_dir}/etc/zuul/layout.yaml",
-    notify => Exec['zuul-reload'],
-  }
-
-  file { '/etc/zuul/openstack_functions.py':
-    ensure => present,
-    source => 'puppet:///modules/openstack_project/zuul/openstack_functions.py',
     notify => Exec['zuul-reload'],
   }
 
