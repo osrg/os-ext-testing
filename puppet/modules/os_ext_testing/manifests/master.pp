@@ -287,6 +287,7 @@ class os_ext_testing::master (
     gerrit_server                => $upstream_gerrit_server,
     gerrit_user                  => $upstream_gerrit_user,
     recheckwatch_ssh_private_key => $upstream_gerrit_ssh_private_key,
+    require                      => Package['httpd'],
   }
 
   file { '/var/lib/recheckwatch/scoreboard.html':
