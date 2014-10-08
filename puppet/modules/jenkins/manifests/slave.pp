@@ -343,8 +343,9 @@ class jenkins::slave(
     recurse => true,
     purge   => true,
     force   => true,
-    require => File['/usr/local/jenkins'],
-    source  => 'puppet:///modules/jenkins/slave_scripts',
+    require => [File['/usr/local/jenkins'],
+                $::project_config::config_dir],
+    source  => $::project_config::jenkins_scripts_dir,
   }
 
   file { '/usr/local/jenkins/jenkins-cli.jar':

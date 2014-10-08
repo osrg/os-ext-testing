@@ -250,8 +250,9 @@ class jenkins::master(
     recurse => true,
     purge   => true,
     force   => true,
-    require => File['/usr/local/jenkins'],
-    source  => 'puppet:///modules/jenkins/slave_scripts',
+    require => [File['/usr/local/jenkins'],
+                $::project_config::config_dir],
+    source  => $::project_config::jenkins_scripts_dir,
   }
 
   file { '/var/lib/jenkins/be.certipost.hudson.plugin.SCPRepositoryPublisher.xml':
