@@ -1,2 +1,0 @@
-jenkins ALL=(ALL) NOPASSWD:ALL
-stack ALL=(ALL) NOPASSWD:ALL
