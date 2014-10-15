@@ -14,9 +14,9 @@ jenkins_cli() {
 
 case "$1" in
 start)
-	for n in 10 9 8 7 6 5 4 3 2 1; do
-		jenkins_cli connect-node
+	for n in 5 4 3 2 1; do
 		jenkins_cli online-node
+		jenkins_cli connect-node
 		output=$(jenkins_cli get-node)
 		if [ $? -eq 0 ]; then
 			echo $output|grep 'temporaryOfflineCause' >/dev/null
