@@ -2,9 +2,10 @@
 # to set up a full OpenStack environment for test runs.
 
 class os_ext_testing::devstack_slave (
-  $bare = true,
+  $thin = false,
   $certname = $::fqdn,
   $ssh_key = '',
+  $sysadmins = [],
   $python3 = false,
   $include_pypy = false,
   $jenkins_url = '',
@@ -27,6 +28,7 @@ class os_ext_testing::devstack_slave (
 
   class { 'openstack_project::slave_common':
     include_pypy        => $include_pypy,
+    sudo                => true,
     project_config_repo => $project_config_repo,
   }
 
@@ -46,6 +48,7 @@ class os_ext_testing::devstack_slave (
     purge   => true,
     force   => true,
     source  => $::project_config::nodepool_scripts_dir,
+    require => $::project_config::config_dir,
   }
 
   file { '/usr/local/jenkins/jenkins-cli.jar':
