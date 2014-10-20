@@ -14,7 +14,7 @@ CONFIG_REPO=${CONFIG_REPO:-https://review.openstack.org/p/openstack-infra/config
 DEVSTACK_GATE_REPO=${DEVSTACK_GATE_REPO:-git://git.openstack.org/openstack-infra/devstack-gate}
 DEVSTACK_GATE_3PPRJ_BASE=${DEVSTACK_GATE_3PPRJ_BASE:-osrg}
 PUPPET_MODULE_PATH="--modulepath=$OSEXT_PATH/puppet/modules:/root/config/modules:/etc/puppet/modules"
-INST_PUPPET_SH=${PUPPET_SH:-https://git.openstack.org/cgit/openstack-infra/config/plain/install_puppet.sh}
+INST_PUPPET_SH=${INST_PUPPET_SH:-https://git.openstack.org/cgit/openstack-infra/config/plain/install_puppet.sh}
 
 # Install Puppet and the OpenStack Infra Config source tree
 if [[ ! -e install_puppet.sh ]]; then

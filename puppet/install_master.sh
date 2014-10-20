@@ -14,7 +14,7 @@ OSEXT_PATH=$THIS_DIR/os-ext-testing
 OSEXT_REPO=${OSEXT_REPO:-https://github.com/jaypipes/os-ext-testing}
 CONFIG_REPO=${CONFIG_REPO:-https://review.openstack.org/p/openstack-infra/config.git}
 PUPPET_MODULE_PATH="--modulepath=$OSEXT_PATH/puppet/modules:/root/config/modules:/etc/puppet/modules"
-INST_PUPPET_SH=${PUPPET_SH:-https://git.openstack.org/cgit/openstack-infra/config/plain/install_puppet.sh}
+INST_PUPPET_SH=${INST_PUPPET_SH:-https://git.openstack.org/cgit/openstack-infra/config/plain/install_puppet.sh}
 
 # Install Puppet and the OpenStack Infra Config source tree
 if [[ ! -e install_puppet.sh ]]; then
