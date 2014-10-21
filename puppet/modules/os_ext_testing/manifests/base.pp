@@ -4,7 +4,6 @@
 class os_ext_testing::base(
   $certname = $::fqdn,
   $project_config_repo = 'https://git.openstack.org/openstack-infra/project-config',
-  #$project_config_repo = 'https://github.com/osrg/project-config.git',
 ) {
   if ($::osfamily == 'Debian') {
     include apt

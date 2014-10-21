@@ -12,6 +12,7 @@ OSEXT_PATH=$THIS_DIR/os-ext-testing
 OSEXT_REPO=${OSEXT_REPO:-https://github.com/jaypipes/os-ext-testing}
 CONFIG_REPO=${CONFIG_REPO:-https://review.openstack.org/p/openstack-infra/system-config.git}
 CONFIG_REPO_DIR=/root/system-config
+PROJECT_CONF_REPO=${PROJECT_CONF_REPO:-https://git.openstack.org/openstack-infra/project-config}
 DEVSTACK_GATE_REPO=${DEVSTACK_GATE_REPO:-git://git.openstack.org/openstack-infra/devstack-gate}
 DEVSTACK_GATE_3PPRJ_BASE=${DEVSTACK_GATE_3PPRJ_BASE:-osrg}
 PUPPET_MODULE_PATH="--modulepath=$OSEXT_PATH/puppet/modules:$CONFIG_REPO_DIR/modules:/etc/puppet/modules"
@@ -84,6 +85,7 @@ fi
 
 CLASS_ARGS="ssh_key => '$JENKINS_SSH_PUBLIC_KEY_CONTENTS', "
 CLASS_ARGS="$CLASS_ARGS jenkins_url => '$JENKINS_URL', "
+CLASS_ARGS="$CLASS_ARGS project_config_repo => '$PROJECT_CONF_REPO', "
 
 sudo puppet apply --verbose $PUPPET_MODULE_PATH -e "class {'os_ext_testing::devstack_slave': $CLASS_ARGS }"
 

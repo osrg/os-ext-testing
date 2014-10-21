@@ -14,6 +14,7 @@ OSEXT_PATH=$THIS_DIR/os-ext-testing
 OSEXT_REPO=${OSEXT_REPO:-https://github.com/jaypipes/os-ext-testing}
 CONFIG_REPO=${CONFIG_REPO:-https://review.openstack.org/p/openstack-infra/system-config.git}
 CONFIG_REPO_DIR=/root/system-config
+PROJECT_CONF_REPO=${PROJECT_CONF_REPO:-https://git.openstack.org/openstack-infra/project-config}
 PUPPET_MODULE_PATH="--modulepath=$OSEXT_PATH/puppet/modules:$CONFIG_REPO_DIR/modules:/etc/puppet/modules"
 INST_PUPPET_SH=${INST_PUPPET_SH:-https://git.openstack.org/cgit/openstack-infra/system-config/plain/install_puppet.sh}
 
@@ -129,6 +130,7 @@ CLASS_ARGS="$CLASS_ARGS jenkins_url => '$JENKINS_URL', "
 CLASS_ARGS="$CLASS_ARGS zuul_url => '$ZUUL_URL', "
 CLASS_ARGS="$CLASS_ARGS data_repo_dir => '$DATA_PATH', "
 CLASS_ARGS="$CLASS_ARGS url_pattern => '$URL_PATTERN', "
+CLASS_ARGS="$CLASS_ARGS project_config_repo => '$PROJECT_CONF_REPO', "
 CLASS_ARGS="$CLASS_ARGS scp_name => '$SCP_NAME', "
 CLASS_ARGS="$CLASS_ARGS scp_host => '$SCP_HOST', "
 CLASS_ARGS="$CLASS_ARGS scp_port => '$SCP_PORT', "

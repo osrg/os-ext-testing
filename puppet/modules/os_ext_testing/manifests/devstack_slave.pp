@@ -8,8 +8,11 @@ class os_ext_testing::devstack_slave (
   $python3 = false,
   $include_pypy = false,
   $jenkins_url = '',
+  $project_config_repo = '',
 ) {
-  include os_ext_testing::base
+  class { 'os_ext_testing::base':
+    project_config_repo => $project_config_repo,
+  }
   include openstack_project::tmpcleanup
   class { 'jenkins::slave':
     bare         => $bare,

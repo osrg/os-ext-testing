@@ -24,6 +24,7 @@ class os_ext_testing::master (
   $git_name = 'MyVendor Jenkins',
   $jenkins_url = 'http://localhost:8080/',
   $zuul_url = '',
+  $project_config_repo = '',
   $scp_name = '',
   $scp_host = '',
   $scp_port = '',
@@ -32,7 +33,9 @@ class os_ext_testing::master (
   $scp_keyfile = '',
   $scp_destpath = '',
 ) {
-  include os_ext_testing::base
+  class { 'os_ext_testing::base':
+    project_config_repo => $project_config_repo,
+  }
   include apache
 
   # Note that we need to do this here, once instead of in the jenkins::master
