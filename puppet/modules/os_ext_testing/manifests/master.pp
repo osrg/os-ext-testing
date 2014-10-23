@@ -278,7 +278,7 @@ class os_ext_testing::master (
   }
   class { '::zuul::merger': }
 
-  if $upstream_gerrit_ssh_pub_key != '' {
+  if $upstream_gerrit_host_pub_key != '' {
     file { '/home/zuul/.ssh':
       ensure  => directory,
       owner   => 'zuul',
@@ -291,7 +291,7 @@ class os_ext_testing::master (
       owner   => 'zuul',
       group   => 'zuul',
       mode    => '0600',
-      content => "review.openstack.org,23.253.232.87,2001:4800:7815:104:3bc3:d7f6:ff03:bf5d ${gerrit_ssh_host_key}",
+      content => "review.openstack.org,23.253.232.87,2001:4800:7815:104:3bc3:d7f6:ff03:bf5d ${upstream_gerrit_host_pub_key}",
       replace => true,
       require => File['/home/zuul/.ssh'],
     }
