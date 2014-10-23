@@ -15,7 +15,7 @@ class os_ext_testing::devstack_slave (
 ) {
   include openstack_project::tmpcleanup
 
-  class { 'openstack_project::server':
+  class { 'os_ext_testing::server':
     iptables_public_tcp_ports => [],
     certname                  => $certname,
     sysadmins                 => $sysadmins,

@@ -143,11 +143,4 @@ CLASS_ARGS="$CLASS_ARGS scp_destpath => '$SCP_DESTPATH', "
 CLASS_ARGS="$CLASS_ARGS devstack_gate_3pprj_base => '$DEVSTACK_GATE_3PPRJ_BASE', "
 CLASS_ARGS="$CLASS_ARGS devstack_gate_3pbranch => '$DEVSTACK_GATE_3PBRANCH', "
 
-# Doing this here because ran into one problem after another trying
-# to do this in Puppet... which won't let me execute Ruby code in
-# a manifest and doesn't allow you to "merge" the contents of two
-# directory sources in the file resource. :(
-sudo mkdir -p /etc/jenkins_jobs/config
-sudo cp -r $DATA_PATH/etc/jenkins_jobs/config/* /etc/jenkins_jobs/config/
-
 sudo puppet apply --verbose $PUPPET_MODULE_PATH -e "class {'os_ext_testing::master': $CLASS_ARGS }"
