@@ -6,6 +6,8 @@ set -e
 
 THIS_DIR=`pwd`
 
+DEVSTACK_GATE_3PPRJ_BASE=${DEVSTACK_GATE_3PPRJ_BASE:-osrg}
+DEVSTACK_GATE_3PBRANCH=${DEVSTACK_GATE_3PBRANCH:-ofaci}
 DATA_REPO_INFO_FILE=$THIS_DIR/.data_repo_info
 DATA_PATH=$THIS_DIR/data
 OSEXT_PATH=$THIS_DIR/os-ext-testing
@@ -86,6 +88,8 @@ fi
 CLASS_ARGS="ssh_key => '$JENKINS_SSH_PUBLIC_KEY_CONTENTS', "
 CLASS_ARGS="$CLASS_ARGS jenkins_url => '$JENKINS_URL', "
 CLASS_ARGS="$CLASS_ARGS project_config_repo => '$PROJECT_CONF_REPO', "
+CLASS_ARGS="$CLASS_ARGS devstack_gate_3pprj_base => '$DEVSTACK_GATE_3PPRJ_BASE', "
+CLASS_ARGS="$CLASS_ARGS devstack_gate_3pbranch => '$DEVSTACK_GATE_3PBRANCH', "
 
 sudo puppet apply --verbose $PUPPET_MODULE_PATH -e "class {'os_ext_testing::devstack_slave': $CLASS_ARGS }"
 

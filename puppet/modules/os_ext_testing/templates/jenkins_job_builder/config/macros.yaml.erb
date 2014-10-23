@@ -3,8 +3,8 @@
     builders:
       - shell: |
           #!/bin/bash -xe
-          export DEVSTACK_GATE_3PPRJ_BASE=osrg
-          export DEVSTACK_GATE_3PBRANCH=ofaci
+          export DEVSTACK_GATE_3PPRJ_BASE=<%= @devstack_gate_3pprj_base %>
+          export DEVSTACK_GATE_3PBRANCH=<%= @devstack_gate_3pbranch %>
           if [[ ! -e devstack-gate ]]; then
               git clone -b $DEVSTACK_GATE_3PBRANCH https://github.com/${DEVSTACK_GATE_3PPRJ_BASE}/devstack-gate.git
           else

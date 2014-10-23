@@ -32,6 +32,8 @@ class os_ext_testing::master (
   $scp_password = '',
   $scp_keyfile = '',
   $scp_destpath = '',
+  $devstack_gate_3pprj_base = '',
+  $devstack_gate_3pbranch = '',
 ) {
   class { 'os_ext_testing::base':
     project_config_repo => $project_config_repo,
@@ -190,7 +192,6 @@ class os_ext_testing::master (
       recurse => true,
       force   => true,
       source  => 'puppet:///modules/os_ext_testing/jenkins_job_builder/config',
-      notify  => Exec['jenkins_jobs_update'],
       require => Exec['restart_jenkins'],
     }
 
@@ -200,8 +201,19 @@ class os_ext_testing::master (
       group  => 'root',
       mode   => '0755',
       content => template('os_ext_testing/jenkins_job_builder/config/macros.yaml.erb'),
+      require => [File['/etc/jenkins_jobs/config'],
+                  Exec['restart_jenkins']],
+    }
+
+    file { '/etc/jenkins_jobs/config/check-tempest-dsvm-ofa.yaml':
+      ensure => present,
+      owner  => 'root',
+      group  => 'root',
+      mode   => '0755',
+      content => template('os_ext_testing/jenkins_job_builder/config/check-tempest-dsvm-ofa.yaml.erb'),
       notify  => Exec['jenkins_jobs_update'],
-      require => Exec['restart_jenkins'],
+      require => [File['/etc/jenkins_jobs/config/macros.yaml'],
+                  Exec['restart_jenkins']],
     }
 
     file { '/etc/default/jenkins':

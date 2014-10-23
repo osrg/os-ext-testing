@@ -8,6 +8,8 @@ set -e
 LC_ALL=C
 THIS_DIR=`pwd`
 
+DEVSTACK_GATE_3PPRJ_BASE=${DEVSTACK_GATE_3PPRJ_BASE:-osrg}
+DEVSTACK_GATE_3PBRANCH=${DEVSTACK_GATE_3PBRANCH:-ofaci}
 DATA_REPO_INFO_FILE=$THIS_DIR/.data_repo_info
 DATA_PATH=$THIS_DIR/data
 OSEXT_PATH=$THIS_DIR/os-ext-testing
@@ -138,6 +140,8 @@ CLASS_ARGS="$CLASS_ARGS scp_user => '$SCP_USER', "
 CLASS_ARGS="$CLASS_ARGS scp_password => '$SCP_PASSWORD', "
 CLASS_ARGS="$CLASS_ARGS scp_keyfile => '$SCP_KEYFILE', "
 CLASS_ARGS="$CLASS_ARGS scp_destpath => '$SCP_DESTPATH', "
+CLASS_ARGS="$CLASS_ARGS devstack_gate_3pprj_base => '$DEVSTACK_GATE_3PPRJ_BASE', "
+CLASS_ARGS="$CLASS_ARGS devstack_gate_3pbranch => '$DEVSTACK_GATE_3PBRANCH', "
 
 # Doing this here because ran into one problem after another trying
 # to do this in Puppet... which won't let me execute Ruby code in

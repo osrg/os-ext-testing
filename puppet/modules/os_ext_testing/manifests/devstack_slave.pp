@@ -9,6 +9,8 @@ class os_ext_testing::devstack_slave (
   $include_pypy = false,
   $jenkins_url = '',
   $project_config_repo = '',
+  $devstack_gate_3pprj_base = '',
+  $devstack_gate_3pbranch = '',
 ) {
   class { 'os_ext_testing::base':
     project_config_repo => $project_config_repo,
