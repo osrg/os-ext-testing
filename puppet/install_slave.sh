@@ -87,6 +87,7 @@ fi
 
 CLASS_ARGS="ssh_key => '$JENKINS_SSH_PUBLIC_KEY_CONTENTS', "
 CLASS_ARGS="$CLASS_ARGS jenkins_url => '$JENKINS_URL', "
+CLASS_ARGS="$CLASS_ARGS data_repo_dir => '$DATA_PATH', "
 CLASS_ARGS="$CLASS_ARGS project_config_repo => '$PROJECT_CONF_REPO', "
 CLASS_ARGS="$CLASS_ARGS devstack_gate_3pprj_base => '$DEVSTACK_GATE_3PPRJ_BASE', "
 CLASS_ARGS="$CLASS_ARGS devstack_gate_3pbranch => '$DEVSTACK_GATE_3PBRANCH', "

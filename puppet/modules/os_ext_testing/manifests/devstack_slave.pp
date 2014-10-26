@@ -3,6 +3,7 @@
 
 class os_ext_testing::devstack_slave (
   $thin = false,
+  $data_repo_dir = '',
   $certname = $::fqdn,
   $ssh_key = '',
   $sysadmins = [],
@@ -15,10 +16,17 @@ class os_ext_testing::devstack_slave (
 ) {
   include openstack_project::tmpcleanup
 
-  class { 'os_ext_testing::server':
+  class { 'openstack_project::server':
     iptables_public_tcp_ports => [],
     certname                  => $certname,
     sysadmins                 => $sysadmins,
+  }
+
+  exec { 'invalidate_fw':
+    command => "cp ${data_repo_dir}/etc/iptables/rules.* ${::iptables::params::rules_dir}/",
+    path    => ['/sbin', '/bin', '/usr/sbin', '/usr/bin'],
+    require => File[$::iptables::params::rules_dir],
+    notify  => $::iptables::notify_iptables,
   }
 
   class { 'jenkins::slave':
