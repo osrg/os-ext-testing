@@ -19,6 +19,7 @@ CONFIG_REPO_DIR=/root/system-config
 PROJECT_CONF_REPO=${PROJECT_CONF_REPO:-https://git.openstack.org/openstack-infra/project-config}
 PUPPET_MODULE_PATH="--modulepath=$OSEXT_PATH/puppet/modules:$CONFIG_REPO_DIR/modules:/etc/puppet/modules"
 INST_PUPPET_SH=${INST_PUPPET_SH:-https://git.openstack.org/cgit/openstack-infra/system-config/plain/install_puppet.sh}
+ZUUL_REVISION=${ZUUL_REVISION:-master}
 
 # Install Puppet and the OpenStack Infra Config source tree
 if [[ ! -e install_puppet.sh ]]; then
@@ -130,6 +131,7 @@ CLASS_ARGS="$CLASS_ARGS git_email => '$GIT_EMAIL', git_name => '$GIT_NAME', "
 CLASS_ARGS="$CLASS_ARGS publish_host => '$PUBLISH_HOST', "
 CLASS_ARGS="$CLASS_ARGS jenkins_url => '$JENKINS_URL', "
 CLASS_ARGS="$CLASS_ARGS zuul_url => '$ZUUL_URL', "
+CLASS_ARGS="$CLASS_ARGS zuul_revision => '$ZUUL_REVISION', "
 CLASS_ARGS="$CLASS_ARGS data_repo_dir => '$DATA_PATH', "
 CLASS_ARGS="$CLASS_ARGS url_pattern => '$URL_PATTERN', "
 CLASS_ARGS="$CLASS_ARGS project_config_repo => '$PROJECT_CONF_REPO', "
