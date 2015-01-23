@@ -13,8 +13,6 @@
       - devstack-checkout  # In macros.yaml from os-ext-testing
       - shell: |
           #!/bin/bash
-          #rm -rf devstack-gate
-          #ln -s ~/devstack-gate
           sudo rm -rf /opt/stack/new/screen-logs /opt/stack/new/devstacklog.txt* /opt/stack/new/devstack/localrc /opt/stack/new/devstack/local.conf /opt/stack/new/tempest/etc/tempest.conf /opt/stack/new/tempest/.testrepository /opt/stack/new/tempest/tempest.log /opt/stack/new/tempest/nosetests*.xml
           sudo rm -rf /opt/stack/logs
           sudo rm -rf /opt/stack/confs
@@ -28,14 +26,17 @@
           #!/bin/bash -xe
           export DEVSTACK_GATE_3PPRJ_BASE=<%= @devstack_gate_3pprj_base %>
           export DEVSTACK_GATE_3PBRANCH=<%= @devstack_gate_3pbranch %>
+          export PROJECTS="osrg/ryu osrg/devstack-gate"
+          export OVERRIDE_DEVSTACK_GATE_PROJECT_BRANCH=$DEVSTACK_GATE_3PBRANCH
+          export OVERRIDE_RYU_PROJECT_BRANCH=$DEVSTACK_GATE_3PBRANCH
           export PYTHONUNBUFFERED=true
           export DEVSTACK_GATE_TIMEOUT=60
           export DEVSTACK_GATE_NEUTRON=1
           export DEVSTACK_GATE_TEMPEST=1
           export DEVSTACK_GATE_RYUPLUGIN=1
-          #export DEVSTACK_GATE_3PLOCALRC="`pwd`/localrc"
           export SKIP_DEVSTACK_GATE_PROJECT=1
           export TEMPEST_CONCURRENCY=1
+          # tempest tests
           DEVSTACK_GATE_TEMPEST_REGEX=tempest.api.network.test_networks
           DEVSTACK_GATE_TEMPEST_REGEX="$DEVSTACK_GATE_TEMPEST_REGEX tempest.api.network.test_floating_ips"
           DEVSTACK_GATE_TEMPEST_REGEX="$DEVSTACK_GATE_TEMPEST_REGEX tempest.api.network.test_security_groups"
@@ -43,6 +44,14 @@
           DEVSTACK_GATE_TEMPEST_REGEX="$DEVSTACK_GATE_TEMPEST_REGEX tempest.api.network.test_load_balancer"
           DEVSTACK_GATE_TEMPEST_REGEX="$DEVSTACK_GATE_TEMPEST_REGEX tempest.api.network.test_service_type_management"
           export DEVSTACK_GATE_TEMPEST_REGEX
+          # localrc
+          DEVSTACK_LOCAL_CONFIG="MYSQL_PASSWORD=insecure_slave"
+          DEVSTACK_LOCAL_CONFIG="$DEVSTACK_LOCAL_CONFIG Q_PLUGIN=ryu"
+          DEVSTACK_LOCAL_CONFIG="$DEVSTACK_LOCAL_CONFIG NETWORK_API_EXTENSIONS=service-type,ext-gw-mode,security-group,fwaas,binding,external-net,router,lbaas,extraroute,quotas"
+          DEVSTACK_LOCAL_CONFIG="$DEVSTACK_LOCAL_CONFIG RYU_APPS=ryu.app.gre_tunnel,ryu.app.quantum_adapter,ryu.app.rest,ryu.app.rest_conf_switch,ryu.app.rest_tunnel,ryu.app.tunnel_port_updater,ryu.app.rest_quantum"
+          DEVSTACK_LOCAL_CONFIG="$DEVSTACK_LOCAL_CONFIG DEVSTACK_GATE_ENABLE_HTTPD_MOD_WSGI_SERVICES=0"
+          #DEVSTACK_LOCAL_CONFIG="ERROR_ON_CLONE=False _RYU_INSTALLED=False RYU_REPO=https://github.com/osrg/ryu RYU_BRANCH=master"
+          export DEVSTACK_LOCAL_CONFIG
           cp devstack-gate/devstack-vm-gate-wrap.sh ./safe-devstack-vm-gate-wrap.sh
           ./safe-devstack-vm-gate-wrap.sh
 
@@ -73,8 +82,6 @@
       - devstack-checkout  # In macros.yaml from os-ext-testing
       - shell: |
           #!/bin/bash
-          #rm -rf devstack-gate
-          #ln -s ~/devstack-gate
           sudo rm -rf /opt/stack/new/screen-logs /opt/stack/new/devstacklog.txt* /opt/stack/new/devstack/localrc /opt/stack/new/tempest/etc/tempest.conf /opt/stack/new/tempest/.testrepository /opt/stack/new/tempest/tempest.log /opt/stack/new/tempest/nosetests*.xml
           sudo rm -rf /opt/stack/logs
           sudo rm -rf /opt/stack/confs
@@ -88,19 +95,36 @@
           #!/bin/bash -xe
           export DEVSTACK_GATE_3PPRJ_BASE=<%= @devstack_gate_3pprj_base %>
           export DEVSTACK_GATE_3PBRANCH=<%= @devstack_gate_3pbranch %>
+          export PROJECTS="osrg/ryu stackforge/networking-ofagent osrg/devstack-gate"
+          export OVERRIDE_DEVSTACK_GATE_PROJECT_BRANCH=$DEVSTACK_GATE_3PBRANCH
+          export OVERRIDE_RYU_PROJECT_BRANCH=$DEVSTACK_GATE_3PBRANCH
           export PYTHONUNBUFFERED=true
           export DEVSTACK_GATE_TIMEOUT=60
           export DEVSTACK_GATE_NEUTRON=1
           export DEVSTACK_GATE_TEMPEST=1
           export DEVSTACK_GATE_OFAGENT=1
-          #export DEVSTACK_GATE_3PLOCALRC="`pwd`/localrc"
           export SKIP_DEVSTACK_GATE_PROJECT=1
           export TEMPEST_CONCURRENCY=1
+          # tempest tests
+          #export DEVSTACK_GATE_TEMPEST_REGEX='(?!.*\[.*\bslow\b.*\])((network)|(neutron))'
           DEVSTACK_GATE_TEMPEST_REGEX=tempest.api.network
           DEVSTACK_GATE_TEMPEST_REGEX="$DEVSTACK_GATE_TEMPEST_REGEX tempest.scenario.test_network_basic_ops"
           DEVSTACK_GATE_TEMPEST_REGEX="$DEVSTACK_GATE_TEMPEST_REGEX tempest.scenario.test_network_advanced_server_ops"
           DEVSTACK_GATE_TEMPEST_REGEX="$DEVSTACK_GATE_TEMPEST_REGEX tempest.scenario.test_security_groups_basic_ops"
           export DEVSTACK_GATE_TEMPEST_REGEX
+          # localrc
+          DEVSTACK_LOCAL_CONFIG="MYSQL_PASSWORD=insecure_slave"
+          DEVSTACK_LOCAL_CONFIG="$DEVSTACK_LOCAL_CONFIG Q_PLUGIN=ml2 Q_AGENT=ofagent"
+          DEVSTACK_LOCAL_CONFIG="$DEVSTACK_LOCAL_CONFIG Q_ML2_PLUGIN_MECHANISM_DRIVERS=ofagent,l2population"
+          DEVSTACK_LOCAL_CONFIG="$DEVSTACK_LOCAL_CONFIG Q_USE_PROVIDERNET_FOR_PUBLIC=True"
+          DEVSTACK_LOCAL_CONFIG="$DEVSTACK_LOCAL_CONFIG Q_USE_PUBLIC_VETH=True ENABLE_TENANT_TUNNELS=True"
+          DEVSTACK_LOCAL_CONFIG="$DEVSTACK_LOCAL_CONFIG PUBLIC_BRIDGE=br-int TENANT_TUNNEL_RANGES=1:1000"
+          DEVSTACK_LOCAL_CONFIG="$DEVSTACK_LOCAL_CONFIG PUBLIC_PHYSICAL_NETWORK=public"
+          DEVSTACK_LOCAL_CONFIG="$DEVSTACK_LOCAL_CONFIG OFAGENT_PHYSICAL_INTERFACE_MAPPINGS=public:veth-pub-int"
+          DEVSTACK_LOCAL_CONFIG="$DEVSTACK_LOCAL_CONFIG DEVSTACK_GATE_ENABLE_HTTPD_MOD_WSGI_SERVICES=0"
+          #DEVSTACK_LOCAL_CONFIG="ERROR_ON_CLONE=False _RYU_INSTALLED=False RYU_REPO=https://github.com/osrg/ryu RYU_BRANCH=master"
+          #DEVSTACK_LOCAL_CONFIG="$DEVSTACK_LOCAL_CONFIG NETWORK_API_EXTENSIONS=service-type,ext-gw-mode,security-group,l3_agent_scheduler,lbaas_agent_scheduler,fwaas,binding,provider,agent,quotas,dhcp_agent_scheduler,multi-provider,external-net,router,allowed-address-pairs,vpnaas,extra_dhcp_opt,lbaas,extraroute"
+          export DEVSTACK_LOCAL_CONFIG
           cp devstack-gate/devstack-vm-gate-wrap.sh ./safe-devstack-vm-gate-wrap.sh
           ./safe-devstack-vm-gate-wrap.sh
 
