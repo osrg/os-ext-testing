@@ -125,6 +125,8 @@
           #DEVSTACK_LOCAL_CONFIG="ERROR_ON_CLONE=False _RYU_INSTALLED=False RYU_REPO=https://github.com/osrg/ryu RYU_BRANCH=master"
           #DEVSTACK_LOCAL_CONFIG="$DEVSTACK_LOCAL_CONFIG NETWORK_API_EXTENSIONS=service-type,ext-gw-mode,security-group,l3_agent_scheduler,lbaas_agent_scheduler,fwaas,binding,provider,agent,quotas,dhcp_agent_scheduler,multi-provider,external-net,router,allowed-address-pairs,vpnaas,extra_dhcp_opt,lbaas,extraroute"
           export DEVSTACK_LOCAL_CONFIG
+          DEVSTACK_ENABLE_PLUGIN="enable_plugin networking-ofagent git://git.openstack.org/stackforge/networking-ofagent"
+          export DEVSTACK_ENABLE_PLUGIN
           cp devstack-gate/devstack-vm-gate-wrap.sh ./safe-devstack-vm-gate-wrap.sh
           ./safe-devstack-vm-gate-wrap.sh
 
