@@ -173,14 +173,6 @@ class os_ext_testing::master (
       require => [File['/etc/jenkins_jobs/config/macros.yaml'],
                   Exec['restart_jenkins']],
     }
-
-    file { '/etc/default/jenkins':
-      ensure => present,
-      owner  => 'root',
-      group  => 'root',
-      mode   => '0644',
-      source => 'puppet:///modules/openstack_project/jenkins/jenkins.default',
-    }
   }
 
   class { '::zuul':
@@ -254,18 +246,5 @@ class os_ext_testing::master (
   file { '/etc/zuul/merger-logging.conf':
     ensure => present,
     source => 'puppet:///modules/openstack_project/zuul/merger-logging.conf',
-  }
-
-  class { '::recheckwatch':
-    gerrit_server                => $upstream_gerrit_server,
-    gerrit_user                  => $upstream_gerrit_user,
-    recheckwatch_ssh_private_key => $upstream_gerrit_ssh_private_key,
-    require                      => Package['httpd'],
-  }
-
-  file { '/var/lib/recheckwatch/scoreboard.html':
-    ensure  => present,
-    source  => 'puppet:///modules/openstack_project/zuul/scoreboard.html',
-    require => File['/var/lib/recheckwatch'],
   }
 }

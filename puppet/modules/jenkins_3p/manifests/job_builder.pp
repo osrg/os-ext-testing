@@ -7,7 +7,9 @@ class jenkins_3p::job_builder (
   $git_revision = 'master',
   $git_url = 'https://git.openstack.org/openstack-infra/jenkins-job-builder',
   $config_dir = '',
+  $extensions = [],
 ) {
+  validate_array($extensions)
 
   # A lot of things need yaml, be conservative requiring this package to avoid
   # conflicts with other modules.
