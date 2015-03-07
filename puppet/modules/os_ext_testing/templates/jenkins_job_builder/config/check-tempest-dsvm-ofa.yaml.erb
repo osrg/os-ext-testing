@@ -46,6 +46,7 @@
           export DEVSTACK_GATE_TEMPEST_REGEX
           # localrc
           DEVSTACK_LOCAL_CONFIG="MYSQL_PASSWORD=insecure_slave"
+          DEVSTACK_LOCAL_CONFIG="$DEVSTACK_LOCAL_CONFIG LIBVIRT_TYPE=qemu"
           DEVSTACK_LOCAL_CONFIG="$DEVSTACK_LOCAL_CONFIG Q_PLUGIN=ryu"
           DEVSTACK_LOCAL_CONFIG="$DEVSTACK_LOCAL_CONFIG NETWORK_API_EXTENSIONS=service-type,ext-gw-mode,security-group,fwaas,binding,external-net,router,lbaas,extraroute,quotas"
           DEVSTACK_LOCAL_CONFIG="$DEVSTACK_LOCAL_CONFIG RYU_APPS=ryu.app.gre_tunnel,ryu.app.quantum_adapter,ryu.app.rest,ryu.app.rest_conf_switch,ryu.app.rest_tunnel,ryu.app.tunnel_port_updater,ryu.app.rest_quantum"
@@ -114,14 +115,17 @@
           export DEVSTACK_GATE_TEMPEST_REGEX
           # localrc
           DEVSTACK_LOCAL_CONFIG="MYSQL_PASSWORD=insecure_slave"
+          DEVSTACK_LOCAL_CONFIG="$DEVSTACK_LOCAL_CONFIG LIBVIRT_TYPE=qemu"
           DEVSTACK_LOCAL_CONFIG="$DEVSTACK_LOCAL_CONFIG Q_PLUGIN=ml2 Q_AGENT=ofagent"
           DEVSTACK_LOCAL_CONFIG="$DEVSTACK_LOCAL_CONFIG Q_ML2_PLUGIN_MECHANISM_DRIVERS=ofagent,l2population"
           DEVSTACK_LOCAL_CONFIG="$DEVSTACK_LOCAL_CONFIG Q_USE_PROVIDERNET_FOR_PUBLIC=True"
           DEVSTACK_LOCAL_CONFIG="$DEVSTACK_LOCAL_CONFIG Q_USE_PUBLIC_VETH=True ENABLE_TENANT_TUNNELS=True"
           DEVSTACK_LOCAL_CONFIG="$DEVSTACK_LOCAL_CONFIG PUBLIC_BRIDGE=br-int TENANT_TUNNEL_RANGES=1:1000"
+          DEVSTACK_LOCAL_CONFIG="$DEVSTACK_LOCAL_CONFIG Q_ML2_PLUGIN_FLAT_TYPE_OPTIONS='flat_networks=\*'"
           DEVSTACK_LOCAL_CONFIG="$DEVSTACK_LOCAL_CONFIG PUBLIC_PHYSICAL_NETWORK=public"
           DEVSTACK_LOCAL_CONFIG="$DEVSTACK_LOCAL_CONFIG OFAGENT_PHYSICAL_INTERFACE_MAPPINGS=public:veth-pub-int"
           DEVSTACK_LOCAL_CONFIG="$DEVSTACK_LOCAL_CONFIG DEVSTACK_GATE_ENABLE_HTTPD_MOD_WSGI_SERVICES=0"
+          DEVSTACK_LOCAL_CONFIG="$DEVSTACK_LOCAL_CONFIG DISABLE_NETWORK_API_EXTENSIONS=fwaas,lbaas,vpnaas,lbaas_agent_scheduler"
           #DEVSTACK_LOCAL_CONFIG="ERROR_ON_CLONE=False _RYU_INSTALLED=False RYU_REPO=https://github.com/${DEVSTACK_GATE_3PPRJ_BASE}/ryu RYU_BRANCH=master"
           #DEVSTACK_LOCAL_CONFIG="$DEVSTACK_LOCAL_CONFIG NETWORK_API_EXTENSIONS=service-type,ext-gw-mode,security-group,l3_agent_scheduler,lbaas_agent_scheduler,fwaas,binding,provider,agent,quotas,dhcp_agent_scheduler,multi-provider,external-net,router,allowed-address-pairs,vpnaas,extra_dhcp_opt,lbaas,extraroute"
           export DEVSTACK_LOCAL_CONFIG
