@@ -3,8 +3,13 @@
     builders:
       - shell: |
           #!/bin/bash -xe
-          export DEVSTACK_GATE_3PPRJ_BASE=<%= @devstack_gate_3pprj_base %>
-          export DEVSTACK_GATE_3PBRANCH=<%= @devstack_gate_3pbranch %>
+          if false; then
+              export DEVSTACK_GATE_3PPRJ_BASE=openstack-infra
+              export DEVSTACK_GATE_3PBRANCH=master
+          else
+              export DEVSTACK_GATE_3PPRJ_BASE=<%= @devstack_gate_3pprj_base %>
+              export DEVSTACK_GATE_3PBRANCH=<%= @devstack_gate_3pbranch %>
+          fi
           if [[ ! -e devstack-gate ]]; then
               git clone -b $DEVSTACK_GATE_3PBRANCH https://github.com/${DEVSTACK_GATE_3PPRJ_BASE}/devstack-gate.git
           else
