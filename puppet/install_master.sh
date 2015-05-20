@@ -26,7 +26,7 @@ if [[ ! -e install_puppet.sh ]]; then
   wget $INST_PUPPET_SH
   sudo bash -xe install_puppet.sh
   sudo git clone $CONFIG_REPO $CONFIG_REPO_DIR
-  sudo /bin/bash $CONFIG_REPO_DIR/install_modules.sh
+  sudo /bin/bash -x $CONFIG_REPO_DIR/install_modules.sh
 fi
 
 # Clone or pull the the os-ext-testing repository
@@ -145,4 +145,4 @@ CLASS_ARGS="$CLASS_ARGS scp_destpath => '$SCP_DESTPATH', "
 CLASS_ARGS="$CLASS_ARGS devstack_gate_3pprj_base => '$DEVSTACK_GATE_3PPRJ_BASE', "
 CLASS_ARGS="$CLASS_ARGS devstack_gate_3pbranch => '$DEVSTACK_GATE_3PBRANCH', "
 
-sudo puppet apply --verbose $PUPPET_MODULE_PATH -e "class {'os_ext_testing::master': $CLASS_ARGS }"
+sudo puppet apply --debug --verbose $PUPPET_MODULE_PATH -e "class {'os_ext_testing::master': $CLASS_ARGS }"

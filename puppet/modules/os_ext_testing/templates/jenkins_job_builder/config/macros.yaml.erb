@@ -41,7 +41,7 @@
     name: console-log
     publishers:
       - scp:
-          site: '<%= scp_name %>'
+          site: '<%= @scp_name %>'
           files:
             - target: '$LOG_PATH'
               copy-console: true
@@ -51,7 +51,7 @@
     name: devstack-logs
     publishers:
       - scp:
-          site: '<%= scp_name %>'
+          site: '<%= @scp_name %>'
           files:
             - target: '$LOG_PATH'
               source: 'logs/**'
@@ -62,7 +62,7 @@
     name: devstack-confs
     publishers:
       - scp:
-          site: '<%= scp_name %>'
+          site: '<%= @scp_name %>'
           files:
             - target: '$LOG_PATH'
               source: 'confs/**'
