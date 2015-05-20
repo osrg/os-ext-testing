@@ -7,8 +7,8 @@ class os_ext_testing::devstack_slave (
   $certname = $::fqdn,
   $ssh_key = '',
   $sysadmins = [],
-  $python3 = false,
-  $include_pypy = false,
+  $jenkins_gitfullname = 'OpenStack Jenkins',
+  $jenkins_gitemail = 'jenkins@openstack.org',
   $jenkins_url = '',
   $project_config_repo = '',
   $devstack_gate_3pprj_base = '',
@@ -31,11 +31,11 @@ class os_ext_testing::devstack_slave (
 
   class { 'jenkins::slave':
     ssh_key      => $ssh_key,
-    python3      => $python3,
+    gitfullname  => $jenkins_gitfullname,
+    gitemail     => $jenkins_gitemail,
   }
 
   class { 'openstack_project::slave_common':
-    include_pypy        => $include_pypy,
     sudo                => true,
     project_config_repo => $project_config_repo,
   }
