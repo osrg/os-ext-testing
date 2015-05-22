@@ -75,7 +75,7 @@
 
     wrappers:
       - timeout:
-          timeout: 60  # Timeout in *minutes*
+          timeout: 120  # Timeout in *minutes*
           fail: true  # A job run that exceeds the timeout will cause a failure
       - timestamps
 
@@ -100,7 +100,7 @@
           export OVERRIDE_DEVSTACK_GATE_PROJECT_BRANCH=$DEVSTACK_GATE_3PBRANCH
           export OVERRIDE_RYU_PROJECT_BRANCH=$DEVSTACK_GATE_3PBRANCH
           export PYTHONUNBUFFERED=true
-          export DEVSTACK_GATE_TIMEOUT=60
+          export DEVSTACK_GATE_TIMEOUT=120
           export DEVSTACK_GATE_NEUTRON=1
           export DEVSTACK_GATE_TEMPEST=1
           export DEVSTACK_GATE_OFAGENT=1
