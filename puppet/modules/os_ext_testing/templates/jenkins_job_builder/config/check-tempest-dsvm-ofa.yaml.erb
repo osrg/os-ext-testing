@@ -10,25 +10,35 @@
       - timestamps
 
     builders:
-      - devstack-checkout  # In macros.yaml from os-ext-testing
-      - shell: |
-          #!/bin/bash
-          sudo rm -rf /opt/stack/new/screen-logs /opt/stack/new/devstacklog.txt* /opt/stack/new/devstack/localrc /opt/stack/new/devstack/local.conf /opt/stack/new/tempest/etc/tempest.conf /opt/stack/new/tempest/.testrepository /opt/stack/new/tempest/tempest.log /opt/stack/new/tempest/nosetests*.xml
-          sudo rm -rf /opt/stack/logs
-          sudo rm -rf /opt/stack/confs
-          sudo apt-get remove -y -qq python-crypto python-iso8601 python-netaddr python-cmd2
-          sudo ovs-vsctl --if-exists del-br br-int
-          sudo ovs-vsctl --if-exists del-br br-ex
-          sudo ovs-vsctl --if-exists del-br br-tun
-          sudo logrotate --force /etc/logrotate.conf
-          exit 0
       - shell: |
           #!/bin/bash -xe
           export DEVSTACK_GATE_3PPRJ_BASE=<%= @devstack_gate_3pprj_base %>
-          export DEVSTACK_GATE_3PBRANCH=<%= @devstack_gate_3pbranch %>
-          export PROJECTS="$DEVSTACK_GATE_3PPRJ_BASE/ryu $DEVSTACK_GATE_3PPRJ_BASE/devstack-gate"
-          export OVERRIDE_DEVSTACK_GATE_PROJECT_BRANCH=$DEVSTACK_GATE_3PBRANCH
-          export OVERRIDE_RYU_PROJECT_BRANCH=$DEVSTACK_GATE_3PBRANCH
+          export DEVSTACK_GATE_3PBRANCH=ofaci_20141211_latest_jenkins_and_no_split_tree
+          if [[ ! -e devstack-gate ]]; then
+              git clone -b $DEVSTACK_GATE_3PBRANCH https://github.com/${DEVSTACK_GATE_3PPRJ_BASE}/devstack-gate.git
+          else
+              cd devstack-gate
+              git remote set-url origin https://github.com/${DEVSTACK_GATE_3PPRJ_BASE}/devstack-gate.git
+              git remote update
+              git reset --hard
+              if ! git clean -x -f ; then
+                  sleep 1
+                  git clean -x -f
+              fi
+              git checkout $DEVSTACK_GATE_3PBRANCH
+              git reset --hard remotes/origin/${DEVSTACK_GATE_3PBRANCH}
+              if ! git clean -x -f ; then
+                  sleep 1
+                  git clean -x -f
+              fi
+              cd ..
+          fi
+
+      - prepare_testenv  # In macros.yaml from os-ext-testing
+      - shell: |
+          #!/bin/bash -xe
+          export DEVSTACK_GATE_3PPRJ_BASE=osrg
+          export DEVSTACK_GATE_3PBRANCH=ofaci_20141211_latest_jenkins_and_no_split_tree
           export PYTHONUNBUFFERED=true
           export DEVSTACK_GATE_TIMEOUT=60
           export DEVSTACK_GATE_NEUTRON=1
@@ -36,7 +46,6 @@
           export DEVSTACK_GATE_RYUPLUGIN=1
           export SKIP_DEVSTACK_GATE_PROJECT=1
           export TEMPEST_CONCURRENCY=1
-          # tempest tests
           DEVSTACK_GATE_TEMPEST_REGEX=tempest.api.network.test_networks
           DEVSTACK_GATE_TEMPEST_REGEX="$DEVSTACK_GATE_TEMPEST_REGEX tempest.api.network.test_floating_ips"
           DEVSTACK_GATE_TEMPEST_REGEX="$DEVSTACK_GATE_TEMPEST_REGEX tempest.api.network.test_security_groups"
@@ -44,15 +53,6 @@
           DEVSTACK_GATE_TEMPEST_REGEX="$DEVSTACK_GATE_TEMPEST_REGEX tempest.api.network.test_load_balancer"
           DEVSTACK_GATE_TEMPEST_REGEX="$DEVSTACK_GATE_TEMPEST_REGEX tempest.api.network.test_service_type_management"
           export DEVSTACK_GATE_TEMPEST_REGEX
-          # localrc
-          DEVSTACK_LOCAL_CONFIG="MYSQL_PASSWORD=insecure_slave"
-          DEVSTACK_LOCAL_CONFIG="$DEVSTACK_LOCAL_CONFIG LIBVIRT_TYPE=qemu"
-          DEVSTACK_LOCAL_CONFIG="$DEVSTACK_LOCAL_CONFIG Q_PLUGIN=ryu"
-          DEVSTACK_LOCAL_CONFIG="$DEVSTACK_LOCAL_CONFIG NETWORK_API_EXTENSIONS=service-type,ext-gw-mode,security-group,fwaas,binding,external-net,router,lbaas,extraroute,quotas"
-          DEVSTACK_LOCAL_CONFIG="$DEVSTACK_LOCAL_CONFIG RYU_APPS=ryu.app.gre_tunnel,ryu.app.quantum_adapter,ryu.app.rest,ryu.app.rest_conf_switch,ryu.app.rest_tunnel,ryu.app.tunnel_port_updater,ryu.app.rest_quantum"
-          DEVSTACK_LOCAL_CONFIG="$DEVSTACK_LOCAL_CONFIG DEVSTACK_GATE_ENABLE_HTTPD_MOD_WSGI_SERVICES=0"
-          #DEVSTACK_LOCAL_CONFIG="ERROR_ON_CLONE=False _RYU_INSTALLED=False RYU_REPO=https://github.com/$DEVSTACK_GATE_3PPRJ_BASE/ryu RYU_BRANCH=master"
-          export DEVSTACK_LOCAL_CONFIG
           cp devstack-gate/devstack-vm-gate-wrap.sh ./safe-devstack-vm-gate-wrap.sh
           ./safe-devstack-vm-gate-wrap.sh
 
@@ -81,58 +81,111 @@
 
     builders:
       - devstack-checkout  # In macros.yaml from os-ext-testing
-      - shell: |
-          #!/bin/bash
-          sudo rm -rf /opt/stack/new/screen-logs /opt/stack/new/devstacklog.txt* /opt/stack/new/devstack/localrc /opt/stack/new/tempest/etc/tempest.conf /opt/stack/new/tempest/.testrepository /opt/stack/new/tempest/tempest.log /opt/stack/new/tempest/nosetests*.xml
-          sudo rm -rf /opt/stack/logs
-          sudo rm -rf /opt/stack/confs
-          sudo apt-get remove -y -qq python-crypto python-iso8601 python-netaddr python-cmd2
-          sudo ovs-vsctl --if-exists del-br br-int
-          sudo ovs-vsctl --if-exists del-br br-ex
-          sudo ovs-vsctl --if-exists del-br br-tun
-          sudo logrotate --force /etc/logrotate.conf
-          exit 0
+      - prepare_testenv  # In macros.yaml from os-ext-testing
       - shell: |
           #!/bin/bash -xe
-          export DEVSTACK_GATE_3PPRJ_BASE=<%= @devstack_gate_3pprj_base %>
-          export DEVSTACK_GATE_3PBRANCH=<%= @devstack_gate_3pbranch %>
-          export PROJECTS="$DEVSTACK_GATE_3PPRJ_BASE/ryu stackforge/networking-ofagent $DEVSTACK_GATE_3PPRJ_BASE/devstack-gate"
-          export OVERRIDE_DEVSTACK_GATE_PROJECT_BRANCH=$DEVSTACK_GATE_3PBRANCH
-          export OVERRIDE_RYU_PROJECT_BRANCH=$DEVSTACK_GATE_3PBRANCH
+          export PROJECTS="stackforge/networking-ofagent"
+          export KEEP_LOCALRC=1
+
           export PYTHONUNBUFFERED=true
           export DEVSTACK_GATE_TIMEOUT=120
           export DEVSTACK_GATE_NEUTRON=1
           export DEVSTACK_GATE_TEMPEST=1
           export DEVSTACK_GATE_OFAGENT=1
-          export SKIP_DEVSTACK_GATE_PROJECT=1
           export TEMPEST_CONCURRENCY=1
-          # tempest tests
-          #export DEVSTACK_GATE_TEMPEST_REGEX='(?!.*\[.*\bslow\b.*\])((network)|(neutron))'
-          DEVSTACK_GATE_TEMPEST_REGEX=tempest.api.network
-          DEVSTACK_GATE_TEMPEST_REGEX="$DEVSTACK_GATE_TEMPEST_REGEX tempest.scenario.test_network_basic_ops"
-          DEVSTACK_GATE_TEMPEST_REGEX="$DEVSTACK_GATE_TEMPEST_REGEX tempest.scenario.test_network_advanced_server_ops"
-          DEVSTACK_GATE_TEMPEST_REGEX="$DEVSTACK_GATE_TEMPEST_REGEX tempest.scenario.test_security_groups_basic_ops"
-          export DEVSTACK_GATE_TEMPEST_REGEX
+
           # localrc
-          DEVSTACK_LOCAL_CONFIG="MYSQL_PASSWORD=insecure_slave"
-          DEVSTACK_LOCAL_CONFIG="$DEVSTACK_LOCAL_CONFIG LIBVIRT_TYPE=qemu"
-          DEVSTACK_LOCAL_CONFIG="$DEVSTACK_LOCAL_CONFIG Q_PLUGIN=ml2 Q_AGENT=ofagent"
+          DEVSTACK_LOCAL_CONFIG="Q_PLUGIN=ml2 Q_AGENT=ofagent"
+          DEVSTACK_LOCAL_CONFIG="$DEVSTACK_LOCAL_CONFIG Q_ML2_PLUGIN_FLAT_TYPE_OPTIONS='flat_networks=\*'"
           DEVSTACK_LOCAL_CONFIG="$DEVSTACK_LOCAL_CONFIG Q_ML2_PLUGIN_MECHANISM_DRIVERS=ofagent,l2population"
           DEVSTACK_LOCAL_CONFIG="$DEVSTACK_LOCAL_CONFIG Q_USE_PROVIDERNET_FOR_PUBLIC=True"
           DEVSTACK_LOCAL_CONFIG="$DEVSTACK_LOCAL_CONFIG Q_USE_PUBLIC_VETH=True ENABLE_TENANT_TUNNELS=True"
           DEVSTACK_LOCAL_CONFIG="$DEVSTACK_LOCAL_CONFIG PUBLIC_BRIDGE=br-int TENANT_TUNNEL_RANGES=1:1000"
-          DEVSTACK_LOCAL_CONFIG="$DEVSTACK_LOCAL_CONFIG Q_ML2_PLUGIN_FLAT_TYPE_OPTIONS='flat_networks=\*'"
           DEVSTACK_LOCAL_CONFIG="$DEVSTACK_LOCAL_CONFIG PUBLIC_PHYSICAL_NETWORK=public"
           DEVSTACK_LOCAL_CONFIG="$DEVSTACK_LOCAL_CONFIG OFAGENT_PHYSICAL_INTERFACE_MAPPINGS=public:veth-pub-int"
+          DEVSTACK_LOCAL_CONFIG="$DEVSTACK_LOCAL_CONFIG LIBVIRT_TYPE=qemu"
+          #DEVSTACK_LOCAL_CONFIG="$DEVSTACK_LOCAL_CONFIG DISABLE_NETWORK_API_EXTENSIONS=fwaas,lbaas,vpnaas,lbaas_agent_scheduler"
           DEVSTACK_LOCAL_CONFIG="$DEVSTACK_LOCAL_CONFIG DEVSTACK_GATE_ENABLE_HTTPD_MOD_WSGI_SERVICES=0"
-          DEVSTACK_LOCAL_CONFIG="$DEVSTACK_LOCAL_CONFIG DISABLE_NETWORK_API_EXTENSIONS=fwaas,lbaas,vpnaas,lbaas_agent_scheduler"
-          #DEVSTACK_LOCAL_CONFIG="ERROR_ON_CLONE=False _RYU_INSTALLED=False RYU_REPO=https://github.com/$DEVSTACK_GATE_3PPRJ_BASE/ryu RYU_BRANCH=master"
-          #DEVSTACK_LOCAL_CONFIG="$DEVSTACK_LOCAL_CONFIG NETWORK_API_EXTENSIONS=service-type,ext-gw-mode,security-group,l3_agent_scheduler,lbaas_agent_scheduler,fwaas,binding,provider,agent,quotas,dhcp_agent_scheduler,multi-provider,external-net,router,allowed-address-pairs,vpnaas,extra_dhcp_opt,lbaas,extraroute"
+
+          DEVSTACK_LOCAL_CONFIG="$DEVSTACK_LOCAL_CONFIG MYSQL_PASSWORD=insecure_slave"
+          DEVSTACK_LOCAL_CONFIG="$DEVSTACK_LOCAL_CONFIG ERROR_ON_CLONE=False"
+
           export DEVSTACK_LOCAL_CONFIG
-          DEVSTACK_ENABLE_PLUGIN="enable_plugin networking-ofagent git://git.openstack.org/stackforge/networking-ofagent"
-          export DEVSTACK_ENABLE_PLUGIN
+
+          # tempest tests
+          #export DEVSTACK_GATE_TEMPEST_REGEX='(?!.*\[.*\bslow\b.*\])((network)|(neutron))'
+          DEVSTACK_GATE_TEMPEST_REGEX=tempest.api.network
+
+          DEVSTACK_GATE_TEMPEST_REGEX="$DEVSTACK_GATE_TEMPEST_REGEX tempest.scenario.test_network_basic_ops"
+          DEVSTACK_GATE_TEMPEST_REGEX="$DEVSTACK_GATE_TEMPEST_REGEX tempest.scenario.test_network_advanced_server_ops"
+          DEVSTACK_GATE_TEMPEST_REGEX="$DEVSTACK_GATE_TEMPEST_REGEX tempest.scenario.test_security_groups_basic_ops"
+          export DEVSTACK_GATE_TEMPEST_REGEX
+
+          # scripts and data file
+          if [ ! -e "$WORKSPACE/81-tempest.sh" ]; then
+              if [ ! -e 81-tempest.sh ]; then
+                  wget https://raw.github.com/osrg/ofaci-inst/master/slave/81-tempest.sh
+              fi
+              if [ ! -e "$WORKSPACE/81-tempest.sh" ]; then
+                  cp get_ofalog.sh $WORKSPACE/81-tempest.sh
+              fi
+          fi
+          if [ ! -e "$WORKSPACE/get_ofalog.sh" ]; then
+              if [ ! -e get_ofalog.sh ]; then
+                  wget https://raw.github.com/osrg/ofaci-inst/master/slave/get_ofalog.sh
+              fi
+              if [ ! -e "$WORKSPACE/get_ofalog.sh" ]; then
+                  cp get_ofalog.sh $WORKSPACE/get_ofalog.sh
+              fi
+          fi
+          if [ ! -e "$WORKSPACE/features.yaml" ]; then
+              if [ ! -e features.yaml ]; then
+                  wget https://raw.github.com/osrg/ofaci-inst/master/slave/features.yaml
+              fi
+              if [ ! -e "$WORKSPACE/features.yaml" ]; then
+                  cp features.yaml $WORKSPACE/features.yaml
+              fi
+          fi
+          if [ -e "$WORKSPACE/features.yaml" ]; then
+              export DEVSTACK_GATE_FEATURE_MATRIX="$WORKSPACE/features.yaml"
+          fi
+
+          function pre_test_hook {{
+              #sudo ovs-vsctl set Controller br-int inactivity_probe=30000
+              if [ -e "$WORKSPACE/81-tempest.sh" ]; then
+                   sed -e '/ping_timeout/s/ping_timeout.*$/ping_timeout 300/' -e '/ssh_timeout/s/ssh_timeout.*$/ssh_timeout 196/' $WORKSPACE/81-tempest.sh > $WORKSPACE/81-tempest.sh.tmp
+                   mv $WORKSPACE/81-tempest.sh.tmp $WORKSPACE/81-tempest.sh
+                   sudo cp $WORKSPACE/81-tempest.sh $BASE/new/devstack/extras.d/
+                   sudo chown stack:stack $BASE/new/devstack/extras.d/81-tempest.sh
+              fi
+              # make local.conf
+              echo "[[post-config|/etc/neutron/plugins/ml2/ml2_conf.ini]]" > $WORKSPACE/local.conf
+              echo "[agent]" >> $WORKSPACE/local.conf
+              echo "l2_population=True" >> $WORKSPACE/local.conf
+              sudo cp $WORKSPACE/local.conf $BASE/new/devstack/
+              sudo chown jenkins:jenkins $BASE/new/devstack/local.conf
+              # make localrc
+              echo "DEST=/opt/stack/new" > $WORKSPACE/localrc
+              echo "enable_plugin networking-ofagent git://git.openstack.org/stackforge/networking-ofagent" >> $WORKSPACE/localrc
+              sudo cp $WORKSPACE/localrc $BASE/new/devstack/
+              sudo chown jenkins:jenkins $BASE/new/devstack/localrc
+          }}
+          export -f pre_test_hook
+
+          cat << \EOF > devstack-vm-gate-ofa.sh
+          #!/bin/bash -xe
+          pushd $WORKSPACE
           cp devstack-gate/devstack-vm-gate-wrap.sh ./safe-devstack-vm-gate-wrap.sh
           ./safe-devstack-vm-gate-wrap.sh
+          RETVAL=$?
+          if [ -e "get_ofalog.sh" ]; then
+              bash -x ./get_ofalog.sh
+          fi
+          popd
+          exit $RETVAL
+          EOF
+
+          bash -xe ./devstack-vm-gate-ofa.sh
 
     publishers:
       - devstack-logs  # In macros.yaml from os-ext-testing
