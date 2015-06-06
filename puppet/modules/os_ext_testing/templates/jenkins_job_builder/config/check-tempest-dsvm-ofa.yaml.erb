@@ -122,37 +122,37 @@
           export DEVSTACK_GATE_TEMPEST_REGEX
 
           # scripts and data file
-          if [ ! -e "$WORKSPACE/81-tempest.sh" ]; then
-              if [ ! -e 81-tempest.sh ]; then
+          if [[ ! -e "$WORKSPACE/81-tempest.sh" ]] then
+              if [[ ! -e 81-tempest.sh ]] then
                   wget https://raw.github.com/osrg/ofaci-inst/master/slave/81-tempest.sh
               fi
-              if [ ! -e "$WORKSPACE/81-tempest.sh" ]; then
+              if [[ ! -e "$WORKSPACE/81-tempest.sh" ]] then
                   cp get_ofalog.sh $WORKSPACE/81-tempest.sh
               fi
           fi
-          if [ ! -e "$WORKSPACE/get_ofalog.sh" ]; then
-              if [ ! -e get_ofalog.sh ]; then
+          if [[ ! -e "$WORKSPACE/get_ofalog.sh" ]] then
+              if [[ ! -e get_ofalog.sh ]] then
                   wget https://raw.github.com/osrg/ofaci-inst/master/slave/get_ofalog.sh
               fi
-              if [ ! -e "$WORKSPACE/get_ofalog.sh" ]; then
+              if [[ ! -e "$WORKSPACE/get_ofalog.sh" ]] then
                   cp get_ofalog.sh $WORKSPACE/get_ofalog.sh
               fi
           fi
-          if [ ! -e "$WORKSPACE/features.yaml" ]; then
-              if [ ! -e features.yaml ]; then
+          if [[ ! -e "$WORKSPACE/features.yaml" ]] then
+              if [[ ! -e features.yaml ]] then
                   wget https://raw.github.com/osrg/ofaci-inst/master/slave/features.yaml
               fi
-              if [ ! -e "$WORKSPACE/features.yaml" ]; then
+              if [[ ! -e "$WORKSPACE/features.yaml" ]] then
                   cp features.yaml $WORKSPACE/features.yaml
               fi
           fi
-          if [ -e "$WORKSPACE/features.yaml" ]; then
+          if [[ -e "$WORKSPACE/features.yaml" ]] then
               export DEVSTACK_GATE_FEATURE_MATRIX="$WORKSPACE/features.yaml"
           fi
 
           function pre_test_hook {{
               #sudo ovs-vsctl set Controller br-int inactivity_probe=30000
-              if [ -e "$WORKSPACE/81-tempest.sh" ]; then
+              if [[ -e "$WORKSPACE/81-tempest.sh" ]] then
                    sed -e '/ping_timeout/s/ping_timeout.*$/ping_timeout 300/' -e '/ssh_timeout/s/ssh_timeout.*$/ssh_timeout 196/' $WORKSPACE/81-tempest.sh > $WORKSPACE/81-tempest.sh.tmp
                    mv $WORKSPACE/81-tempest.sh.tmp $WORKSPACE/81-tempest.sh
                    sudo cp $WORKSPACE/81-tempest.sh $BASE/new/devstack/extras.d/
@@ -178,7 +178,7 @@
           cp devstack-gate/devstack-vm-gate-wrap.sh ./safe-devstack-vm-gate-wrap.sh
           ./safe-devstack-vm-gate-wrap.sh
           RETVAL=$?
-          if [ -e "get_ofalog.sh" ]; then
+          if [[ -e "get_ofalog.sh" ]]; then
               bash -x ./get_ofalog.sh
           fi
           popd
