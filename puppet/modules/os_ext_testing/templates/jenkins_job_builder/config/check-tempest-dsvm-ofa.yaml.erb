@@ -37,7 +37,7 @@
       - prepare_testenv  # In macros.yaml from os-ext-testing
       - shell: |
           #!/bin/bash -xe
-          export DEVSTACK_GATE_3PPRJ_BASE=osrg
+          export DEVSTACK_GATE_3PPRJ_BASE=<%= @devstack_gate_3pprj_base %>
           export DEVSTACK_GATE_3PBRANCH=ofaci_20141211_latest_jenkins_and_no_split_tree
           export PYTHONUNBUFFERED=true
           export DEVSTACK_GATE_TIMEOUT=60
