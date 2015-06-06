@@ -15,10 +15,10 @@
           export DEVSTACK_GATE_3PPRJ_BASE=<%= @devstack_gate_3pprj_base %>
           export DEVSTACK_GATE_3PBRANCH=ofaci_20141211_latest_jenkins_and_no_split_tree
           if [[ ! -e devstack-gate ]]; then
-              git clone -b $DEVSTACK_GATE_3PBRANCH https://github.com/${DEVSTACK_GATE_3PPRJ_BASE}/devstack-gate.git
+              git clone -b $DEVSTACK_GATE_3PBRANCH https://github.com/${{DEVSTACK_GATE_3PPRJ_BASE}}/devstack-gate.git
           else
               cd devstack-gate
-              git remote set-url origin https://github.com/${DEVSTACK_GATE_3PPRJ_BASE}/devstack-gate.git
+              git remote set-url origin https://github.com/${{DEVSTACK_GATE_3PPRJ_BASE}}/devstack-gate.git
               git remote update
               git reset --hard
               if ! git clean -x -f ; then
@@ -26,7 +26,7 @@
                   git clean -x -f
               fi
               git checkout $DEVSTACK_GATE_3PBRANCH
-              git reset --hard remotes/origin/${DEVSTACK_GATE_3PBRANCH}
+              git reset --hard remotes/origin/${{DEVSTACK_GATE_3PBRANCH}}
               if ! git clean -x -f ; then
                   sleep 1
                   git clean -x -f
