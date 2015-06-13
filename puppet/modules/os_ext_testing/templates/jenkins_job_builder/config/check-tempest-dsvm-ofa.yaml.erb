@@ -84,7 +84,7 @@
       - prepare_testenv  # In macros.yaml from os-ext-testing
       - shell: |
           #!/bin/bash -xe
-          export PROJECTS="stackforge/networking-ofagent"
+          export PROJECTS="openstack/networking-ofagent"
           export KEEP_LOCALRC=1
 
           export PYTHONUNBUFFERED=true
@@ -166,7 +166,7 @@
               sudo chown jenkins:jenkins $BASE/new/devstack/local.conf
               # make localrc
               echo "DEST=/opt/stack/new" > $WORKSPACE/localrc
-              echo "enable_plugin networking-ofagent git://git.openstack.org/stackforge/networking-ofagent" >> $WORKSPACE/localrc
+              echo "enable_plugin networking-ofagent git://git.openstack.org/openstack/networking-ofagent" >> $WORKSPACE/localrc
               sudo cp $WORKSPACE/localrc $BASE/new/devstack/
               sudo chown jenkins:jenkins $BASE/new/devstack/localrc
           }}
