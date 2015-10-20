@@ -75,7 +75,7 @@
 
     wrappers:
       - timeout:
-          timeout: 120  # Timeout in *minutes*
+          timeout: 150  # Timeout in *minutes*
           fail: true  # A job run that exceeds the timeout will cause a failure
       - timestamps
 
@@ -88,27 +88,29 @@
           export KEEP_LOCALRC=1
 
           export PYTHONUNBUFFERED=true
-          export DEVSTACK_GATE_TIMEOUT=120
+          export DEVSTACK_GATE_TIMEOUT=150
           export DEVSTACK_GATE_NEUTRON=1
           export DEVSTACK_GATE_TEMPEST=1
           export DEVSTACK_GATE_OFAGENT=1
           export TEMPEST_CONCURRENCY=1
 
           # localrc
-          DEVSTACK_LOCAL_CONFIG="Q_PLUGIN=ml2 Q_AGENT=ofagent"
-          DEVSTACK_LOCAL_CONFIG="$DEVSTACK_LOCAL_CONFIG Q_ML2_PLUGIN_FLAT_TYPE_OPTIONS='flat_networks=\*'"
-          DEVSTACK_LOCAL_CONFIG="$DEVSTACK_LOCAL_CONFIG Q_ML2_PLUGIN_MECHANISM_DRIVERS=ofagent,l2population"
-          DEVSTACK_LOCAL_CONFIG="$DEVSTACK_LOCAL_CONFIG Q_USE_PROVIDERNET_FOR_PUBLIC=True"
-          DEVSTACK_LOCAL_CONFIG="$DEVSTACK_LOCAL_CONFIG Q_USE_PUBLIC_VETH=True ENABLE_TENANT_TUNNELS=True"
-          DEVSTACK_LOCAL_CONFIG="$DEVSTACK_LOCAL_CONFIG PUBLIC_BRIDGE=br-int TENANT_TUNNEL_RANGES=1:1000"
-          DEVSTACK_LOCAL_CONFIG="$DEVSTACK_LOCAL_CONFIG PUBLIC_PHYSICAL_NETWORK=public"
-          DEVSTACK_LOCAL_CONFIG="$DEVSTACK_LOCAL_CONFIG OFAGENT_PHYSICAL_INTERFACE_MAPPINGS=public:veth-pub-int"
-          DEVSTACK_LOCAL_CONFIG="$DEVSTACK_LOCAL_CONFIG LIBVIRT_TYPE=qemu"
-          #DEVSTACK_LOCAL_CONFIG="$DEVSTACK_LOCAL_CONFIG DISABLE_NETWORK_API_EXTENSIONS=fwaas,lbaas,vpnaas,lbaas_agent_scheduler"
-          DEVSTACK_LOCAL_CONFIG="$DEVSTACK_LOCAL_CONFIG DEVSTACK_GATE_ENABLE_HTTPD_MOD_WSGI_SERVICES=0"
+          DEVSTACK_LOCAL_CONFIG="Q_PLUGIN=ml2"
+          DEVSTACK_LOCAL_CONFIG+=$'\n'"Q_AGENT=ofagent"
+          DEVSTACK_LOCAL_CONFIG+=$'\n'"Q_ML2_PLUGIN_FLAT_TYPE_OPTIONS='flat_networks=\*'"
+          DEVSTACK_LOCAL_CONFIG+=$'\n'"Q_ML2_PLUGIN_MECHANISM_DRIVERS=ofagent,l2population"
+          DEVSTACK_LOCAL_CONFIG+=$'\n'"Q_USE_PROVIDERNET_FOR_PUBLIC=True"
+          DEVSTACK_LOCAL_CONFIG+=$'\n'"Q_USE_PUBLIC_VETH=True ENABLE_TENANT_TUNNELS=True"
+          DEVSTACK_LOCAL_CONFIG+=$'\n'"PUBLIC_BRIDGE=br-int TENANT_TUNNEL_RANGES=1:1000"
+          DEVSTACK_LOCAL_CONFIG+=$'\n'"PUBLIC_PHYSICAL_NETWORK=public"
+          DEVSTACK_LOCAL_CONFIG+=$'\n'"OFAGENT_PHYSICAL_INTERFACE_MAPPINGS=public:veth-pub-int"
+          DEVSTACK_LOCAL_CONFIG+=$'\n'"LIBVIRT_TYPE=qemu"
+          #DEVSTACK_LOCAL_CONFIG+=$'\n'"DISABLE_NETWORK_API_EXTENSIONS=fwaas,lbaas,vpnaas,lbaas_agent_scheduler"
+          DEVSTACK_LOCAL_CONFIG+=$'\n'"DEVSTACK_GATE_ENABLE_HTTPD_MOD_WSGI_SERVICES=0"
+          DEVSTACK_LOCAL_CONFIG+=$'\n'"enable_plugin networking-ofagent git://git.openstack.org/openstack/networking-ofagent"
 
-          DEVSTACK_LOCAL_CONFIG="$DEVSTACK_LOCAL_CONFIG MYSQL_PASSWORD=insecure_slave"
-          DEVSTACK_LOCAL_CONFIG="$DEVSTACK_LOCAL_CONFIG ERROR_ON_CLONE=False"
+          DEVSTACK_LOCAL_CONFIG+=$'\n'"MYSQL_PASSWORD=insecure_slave"
+          DEVSTACK_LOCAL_CONFIG+=$'\n'"ERROR_ON_CLONE=False"
 
           export DEVSTACK_LOCAL_CONFIG
 
@@ -116,44 +118,48 @@
           #export DEVSTACK_GATE_TEMPEST_REGEX='(?!.*\[.*\bslow\b.*\])((network)|(neutron))'
           DEVSTACK_GATE_TEMPEST_REGEX=tempest.api.network
 
-          DEVSTACK_GATE_TEMPEST_REGEX="$DEVSTACK_GATE_TEMPEST_REGEX tempest.scenario.test_network_basic_ops"
-          DEVSTACK_GATE_TEMPEST_REGEX="$DEVSTACK_GATE_TEMPEST_REGEX tempest.scenario.test_network_advanced_server_ops"
-          DEVSTACK_GATE_TEMPEST_REGEX="$DEVSTACK_GATE_TEMPEST_REGEX tempest.scenario.test_security_groups_basic_ops"
+          DEVSTACK_GATE_TEMPEST_REGEX+=$'\n'"tempest.scenario.test_network_basic_ops"
+          DEVSTACK_GATE_TEMPEST_REGEX+=$'\n'"tempest.scenario.test_network_advanced_server_ops"
+          DEVSTACK_GATE_TEMPEST_REGEX+=$'\n'"tempest.scenario.test_security_groups_basic_ops"
           export DEVSTACK_GATE_TEMPEST_REGEX
 
           # scripts and data file
           if [[ ! -e "$WORKSPACE/81-tempest.sh" ]]; then
               if [[ ! -e 81-tempest.sh ]]; then
-                  wget https://raw.github.com/osrg/ofaci-inst/master/slave/81-tempest.sh
+                  wget https://raw.github.com/osrg/ofaci-inst/master/slave/81-tempest.sh || true
               fi
-              if [[ ! -e "$WORKSPACE/81-tempest.sh" ]]; then
-                  cp get_ofalog.sh $WORKSPACE/81-tempest.sh
+              # The current directory may be $WORKSPACE
+              if [[ -e 81-tempest.sh &&  ! -e "$WORKSPACE/81-tempest.sh" ]]; then
+                  cp 81-tempest.sh $WORKSPACE/81-tempest.sh
               fi
           fi
           if [[ ! -e "$WORKSPACE/get_ofalog.sh" ]]; then
               if [[ ! -e get_ofalog.sh ]]; then
-                  wget https://raw.github.com/osrg/ofaci-inst/master/slave/get_ofalog.sh
+                  wget https://raw.github.com/osrg/ofaci-inst/master/slave/get_ofalog.sh || true
               fi
-              if [[ ! -e "$WORKSPACE/get_ofalog.sh" ]]; then
+              # The current directory may be $WORKSPACE
+              if [[ -e get_ofalog.sh && ! -e "$WORKSPACE/get_ofalog.sh" ]]; then
                   cp get_ofalog.sh $WORKSPACE/get_ofalog.sh
               fi
           fi
           if [[ ! -e "$WORKSPACE/features.yaml" ]]; then
               if [[ ! -e features.yaml ]]; then
-                  wget https://raw.github.com/osrg/ofaci-inst/master/slave/features.yaml
+                  wget https://raw.github.com/osrg/ofaci-inst/master/slave/features.yaml || true
               fi
-              if [[ ! -e "$WORKSPACE/features.yaml" ]]; then
+              # The current directory may be $WORKSPACE
+              if [[ -e features.yaml && ! -e "$WORKSPACE/features.yaml" ]]; then
                   cp features.yaml $WORKSPACE/features.yaml
               fi
           fi
-          if [[ -e "$WORKSPACE/features.yaml" ]]; then
-              export DEVSTACK_GATE_FEATURE_MATRIX="$WORKSPACE/features.yaml"
-          fi
+          # comment out as we use a features.yaml file provided by openstack-infra
+          #if [[ -e "$WORKSPACE/features.yaml" ]]; then
+          #    export DEVSTACK_GATE_FEATURE_MATRIX="$WORKSPACE/features.yaml"
+          #fi
 
           function pre_test_hook {{
               #sudo ovs-vsctl set Controller br-int inactivity_probe=30000
               if [[ -e "$WORKSPACE/81-tempest.sh" ]]; then
-                   sed -e '/ping_timeout/s/ping_timeout.*$/ping_timeout 300/' -e '/ssh_timeout/s/ssh_timeout.*$/ssh_timeout 196/' $WORKSPACE/81-tempest.sh > $WORKSPACE/81-tempest.sh.tmp
+                   sed -e '/ping_timeout/s/ping_timeout.*$/ping_timeout 120/' -e '/ssh_timeout/s/ssh_timeout.*$/ssh_timeout 196/' $WORKSPACE/81-tempest.sh > $WORKSPACE/81-tempest.sh.tmp
                    mv $WORKSPACE/81-tempest.sh.tmp $WORKSPACE/81-tempest.sh
                    sudo cp $WORKSPACE/81-tempest.sh $BASE/new/devstack/extras.d/
                    sudo chown stack:stack $BASE/new/devstack/extras.d/81-tempest.sh
@@ -164,11 +170,6 @@
               echo "l2_population=True" >> $WORKSPACE/local.conf
               sudo cp $WORKSPACE/local.conf $BASE/new/devstack/
               sudo chown jenkins:jenkins $BASE/new/devstack/local.conf
-              # make localrc
-              echo "DEST=/opt/stack/new" > $WORKSPACE/localrc
-              echo "enable_plugin networking-ofagent git://git.openstack.org/openstack/networking-ofagent" >> $WORKSPACE/localrc
-              sudo cp $WORKSPACE/localrc $BASE/new/devstack/
-              sudo chown jenkins:jenkins $BASE/new/devstack/localrc
           }}
           export -f pre_test_hook
 
